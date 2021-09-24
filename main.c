@@ -47,6 +47,14 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
     {
         page = fifo_frm; //Primeira moldura acessada
     }
+    if(num_pages > 0)
+    {
+
+    }    
+    if(num_pages > 0)
+    {
+        
+    }
     
 
     return page;    
