@@ -54,8 +54,7 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
     if(num_pages > 0)
     {
         
-    }
-    
+    }    
 
     return page;    
 }
