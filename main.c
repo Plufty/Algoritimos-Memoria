@@ -49,7 +49,7 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
                 return page;
                 break;
             }
-            if(page == num_pages && page_table[page][PT_MAPPED] == 1)
+            else if(page == num_pages && page_table[page][PT_MAPPED] == 1)
             {
                 return fifo_frm;
                 break;
@@ -68,22 +68,46 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
                 return page;
                 break;
             }
-            if(page == num_pages && page_table[page][PT_MAPPED] == 1 &&page_table[fifo_frm][PT_REFERENCE_BIT] == 0)
+            else if(page == num_pages && page_table[page][PT_MAPPED] == 1 &&page_table[fifo_frm][PT_REFERENCE_BIT] == 0)
             {
                 return fifo_frm;
+                break;
+            }
+            else if(page == num_pages && page_table[page][PT_MAPPED] == 1 &&page_table[fifo_frm][PT_REFERENCE_BIT] == 1)
+            {
+                //Como colocar a página no fim da fila?
                 break;
             }
         }
 }
 
 int nru(int8_t** page_table, int num_pages, int prev_page,
-        int fifo_frm, int num_frames, int clock) {
+        int fifo_frm, int num_frames, int clock) 
+{
+    int page = 0;
+        for (page = 0; page <= num_pages; page++) // Encontra página mapeada
+        {
+            if(page_table[page][PT_MAPPED] == 0)
+            {
+                return page;
+                break;
+            }
+        }
     return -1;
 }
 
 int aging(int8_t** page_table, int num_pages, int prev_page,
-          int fifo_frm, int num_frames, int clock) {
-    return -1;
+          int fifo_frm, int num_frames, int clock) 
+{
+    int page = 0;
+        for (page = 0; page <= num_pages; page++) // Encontra página mapeada
+        {
+            if(page_table[page][PT_MAPPED] == 0)
+            {
+                return page;
+                break;
+            }
+        }
 }
 
 int random_page(int8_t** page_table, int num_pages, int prev_page,
