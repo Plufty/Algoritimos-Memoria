@@ -42,7 +42,7 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
          int fifo_frm, int num_frames, int clock) 
 {
     int page = 0;
-        for (page = 0; page <= num_pages; i++) // Encontra página mapeada
+        for (page = 0; page <= num_pages; page++) // Encontra página mapeada
         {
             if(page_table[page][PT_MAPPED] == 0)
             {
@@ -61,7 +61,7 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
                   int fifo_frm, int num_frames, int clock) 
 {
     int page = 0;
-        for (page = 0; page <= num_pages; i++) // Encontra página mapeada
+        for (page = 0; page <= num_pages; page++) // Encontra página mapeada
         {
             if(page_table[page][PT_MAPPED] == 0)
             {
