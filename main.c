@@ -41,27 +41,39 @@ typedef struct {
 int fifo(int8_t** page_table, int num_pages, int prev_page,
          int fifo_frm, int num_frames, int clock) 
 {
-    int page;
-    //Devo verificar se existem espaços livres na tabela de páginas
-    if(num_pages == 0)//Caso não, será removida a primeira moldura acessada
-    {
-        page = fifo_frm; //Primeira moldura acessada
-    }
-    if(num_pages > 0)
-    {
-
-    }    
-    if(num_pages > 0)
-    {
-        
-    }    
-
-    return page;    
+    int page = 0;
+        for (page = 0; page <= num_pages; i++) // Encontra página mapeada
+        {
+            if(page_table[page][PT_MAPPED] == 0)
+            {
+                return page;
+                break;
+            }
+            if(page == num_pages && page_table[page][PT_MAPPED] == 1)
+            {
+                return fifo_frm;
+                break;
+            }
+        }
 }
 
 int second_chance(int8_t** page_table, int num_pages, int prev_page,
-                  int fifo_frm, int num_frames, int clock) {
-    return -1;
+                  int fifo_frm, int num_frames, int clock) 
+{
+    int page = 0;
+        for (page = 0; page <= num_pages; i++) // Encontra página mapeada
+        {
+            if(page_table[page][PT_MAPPED] == 0)
+            {
+                return page;
+                break;
+            }
+            if(page == num_pages && page_table[page][PT_MAPPED] == 1 &&page_table[fifo_frm][PT_REFERENCE_BIT] == 0)
+            {
+                return fifo_frm;
+                break;
+            }
+        }
 }
 
 int nru(int8_t** page_table, int num_pages, int prev_page,
