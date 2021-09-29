@@ -42,18 +42,13 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
          int fifo_frm, int num_frames, int clock) 
 {
     int page = 0;
-        for (page = 0; page <= num_pages; page++) // Encontra página mapeada
+        for (page = 0; page <= (num_pages-1); page++) // Encontra página mapeada
         {
-            if(page_table[page][PT_MAPPED] == 0)
+            if(page_table[page][PT_FRAMEID] == fifo_frm)
             {
                 return page;
-                break;
             }
-            else if(page == num_pages && page_table[page][PT_MAPPED] == 1)
-            {
-                return fifo_frm;
-                break;
-            }
+            
         }
 }
 
@@ -61,53 +56,72 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
                   int fifo_frm, int num_frames, int clock) 
 {
     int page = 0;
-        for (page = 0; page <= num_pages; page++) // Encontra página mapeada
+        for (page = 0; page <= (num_pages-1); page++) // Encontra página mapeada
         {
-            if(page_table[page][PT_MAPPED] == 0)
+            if(page_table[page][PT_FRAMEID] == fifo_frm)
             {
-                return page;
-                break;
-            }
-            else if(page == num_pages && page_table[page][PT_MAPPED] == 1 &&page_table[fifo_frm][PT_REFERENCE_BIT] == 0)
-            {
-                return fifo_frm;
-                break;
-            }
-            else if(page == num_pages && page_table[page][PT_MAPPED] == 1 &&page_table[fifo_frm][PT_REFERENCE_BIT] == 1)
-            {
-                //Como colocar a página no fim da fila?
-                break;
-            }
+                if(page_table[page][PT_REFERENCE_BIT] == 0)
+                {
+                    return page;
+                }
+            }            
         }
 }
 
 int nru(int8_t** page_table, int num_pages, int prev_page,
         int fifo_frm, int num_frames, int clock) 
 {
-    int page = 0;
-        for (page = 0; page <= num_pages; page++) // Encontra página mapeada
+    int classe0, classe1, classe2, classe3, page;
+    int completo = 0;
+
+    for (classe0 = 0; classe0 < num_pages; classe0++)
+    {    
+        if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_REFERENCE_MODE] == 0)//classe 0
         {
-            if(page_table[page][PT_MAPPED] == 0)
+            completo = 1;
+            return classe0;
+        }
+    }
+    if (completo == 0)
+    {
+        for (classe1 = 0; classe1 < num_pages; classe1++)
+        {
+            if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_REFERENCE_MODE] == 1)//classe 1
             {
-                return page;
-                break;
+                completo = 1;
+                return classe1;
             }
         }
-    return -1;
+        if (completo == 0)
+        {
+            for (classe2 = 0; classe2 < num_pages; classe2++)
+            {
+                if(page_table[classe0][PT_REFERENCE_BIT] == 1 && page_table[classe0][PT_REFERENCE_MODE] == 0)//classe 2
+                {
+                    completo = 1;
+                    return classe2;
+                }
+            }
+            if (completo == 0)
+            {
+                for (classe3 = 0; classe3 < num_pages; classe3++)
+                {
+                    if(page_table[classe0][PT_REFERENCE_BIT] == 1 && page_table[classe0][PT_REFERENCE_MODE] == 1)//classe 3
+                    {
+                        
+                        completo = 1;
+                        return classe3;
+                    }
+                }
+            }    
+        }    
+    }
 }
 
 int aging(int8_t** page_table, int num_pages, int prev_page,
           int fifo_frm, int num_frames, int clock) 
 {
-    int page = 0;
-        for (page = 0; page <= num_pages; page++) // Encontra página mapeada
-        {
-            if(page_table[page][PT_MAPPED] == 0)
-            {
-                return page;
-                break;
-            }
-        }
+    return -1;
 }
 
 int random_page(int8_t** page_table, int num_pages, int prev_page,
