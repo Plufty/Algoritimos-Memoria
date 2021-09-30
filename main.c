@@ -43,7 +43,7 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
 {
     int page;
     for(page = 0;page < num_pages;page++)//percorrendo todas as páginas
-    {            
+    {       
         if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0)//se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída
         {
             
@@ -54,21 +54,23 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
 
 int second_chance(int8_t** page_table, int num_pages, int prev_page,
                   int fifo_frm, int num_frames, int clock) 
-{
+{ 
     int page;
-    for(int page = 0;page < num_pages; page++)
-    {
-        if((page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED] != 0) && page_table[page][PT_REFERENCE_BIT] == 0) // se o bit R for 1, ela vai pro fim da fila
+    for(page = 0;page < num_pages;page++)//percorrendo todas as páginas
+    {       
+        printf("%d\n", page_table[page][PT_REFERENCE_BIT]);
+        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 0)//se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída
         {            
             return page;
         }
-        //se essa foi a primeira moldura acessada, o bit R for 0 e a página está mapeada, ela será substituída
-        else if((page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED] != 0) && page_table[page][PT_REFERENCE_BIT] == 1)
-        {            
-            fifo_frm = page_table[page][PT_FRAMEID]+1;
+        else if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 1)
+        {
+            //devo colocar a página no final da fila
         }
     }
+
 }
+
 
 int nru(int8_t** page_table, int num_pages, int prev_page,
         int fifo_frm, int num_frames, int clock) 
@@ -128,10 +130,7 @@ int aging(int8_t** page_table, int num_pages, int prev_page,
     int page;
     for(page = 0;page < num_pages;page++)//percorrendo todas as páginas e adicionando os contadores
     {
-        if(page_table[page][PT_REFERENCE_BIT] == 1)
-        {
-            page_table[page][PT_REFERENCE_BIT]++;
-        }
+        printf("counter: %d, clock: %d\n", page_table[menor][PT_AGING_COUNTER], clock);
     }
     return page;
 }
