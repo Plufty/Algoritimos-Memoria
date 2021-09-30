@@ -41,31 +41,33 @@ typedef struct {
 int fifo(int8_t** page_table, int num_pages, int prev_page,
          int fifo_frm, int num_frames, int clock) 
 {
-    int page = 0;
-        for (page = 0; page <= (num_pages-1); page++) // Encontra página mapeada
+    int page;
+    for(page = 0;page < num_pages;page++)//percorrendo todas as páginas
+    {            
+        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0)//se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída
         {
-            if(page_table[page][PT_FRAMEID] == fifo_frm)
-            {
-                return page;
-            }
             
+            return page;
         }
+    }
 }
 
 int second_chance(int8_t** page_table, int num_pages, int prev_page,
                   int fifo_frm, int num_frames, int clock) 
 {
-    int page = 0;
-        for (page = 0; page <= (num_pages-1); page++) // Encontra página mapeada
-        {
-            if(page_table[page][PT_FRAMEID] == fifo_frm)
-            {
-                if(page_table[page][PT_REFERENCE_BIT] == 0)
-                {
-                    return page;
-                }
-            }            
+    int page = 1;
+    for(int page = 0;page < num_pages; page++)
+    {
+        //se essa foi a primeira moldura acessada, o bit R for 0 e a página está mapeada, ela será substituída
+        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED] != 0 && page_table[page][PT_REFERENCE_BIT] == 1) // se o bit R for 1, ela vai pro fim da fila
+        {            
+            fifo_frm = page_table[page][PT_FRAMEID]+1;
         }
+        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED] != 0 && page_table[page][PT_REFERENCE_BIT] == 0)
+        {            
+            return page;
+        }
+    }
 }
 
 int nru(int8_t** page_table, int num_pages, int prev_page,
@@ -76,7 +78,7 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
 
     for (classe0 = 0; classe0 < num_pages; classe0++)
     {    
-        if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_REFERENCE_MODE] == 0)//classe 0
+        if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_REFERENCE_MODE] == 0 && page_table[page][PT_MAPPED]!=0)//classe 0
         {
             completo = 1;
             return classe0;
@@ -86,7 +88,7 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
     {
         for (classe1 = 0; classe1 < num_pages; classe1++)
         {
-            if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_REFERENCE_MODE] == 1)//classe 1
+            if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_DIRTY] == 1 && page_table[page][PT_MAPPED]!=0)//classe 1
             {
                 completo = 1;
                 return classe1;
@@ -96,7 +98,7 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
         {
             for (classe2 = 0; classe2 < num_pages; classe2++)
             {
-                if(page_table[classe0][PT_REFERENCE_BIT] == 1 && page_table[classe0][PT_REFERENCE_MODE] == 0)//classe 2
+                if(page_table[classe0][PT_REFERENCE_BIT] == 1 && page_table[classe0][PT_DIRTY] == 0 && page_table[page][PT_MAPPED]!=0)//classe 2
                 {
                     completo = 1;
                     return classe2;
@@ -106,7 +108,7 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
             {
                 for (classe3 = 0; classe3 < num_pages; classe3++)
                 {
-                    if(page_table[classe0][PT_REFERENCE_BIT] == 1 && page_table[classe0][PT_REFERENCE_MODE] == 1)//classe 3
+                    if(page_table[classe0][PT_REFERENCE_BIT] == 1 && page_table[classe0][PT_DIRTY] == 1 && page_table[page][PT_MAPPED]!=0)//classe 3
                     {
                         
                         completo = 1;
