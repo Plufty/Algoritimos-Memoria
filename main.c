@@ -123,7 +123,17 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
 int aging(int8_t** page_table, int num_pages, int prev_page,
           int fifo_frm, int num_frames, int clock) 
 {
-    return -1;
+    int menor = 1;
+    printf("%d", page_table[menor][PT_AGING_COUNTER]);
+    int page;
+    for(page = 0;page < num_pages;page++)//percorrendo todas as páginas e adicionando os contadores
+    {
+        if(page_table[page][PT_REFERENCE_BIT] == 1)
+        {
+            page_table[page][PT_REFERENCE_BIT]++;
+        }
+    }
+    return page;
 }
 
 int random_page(int8_t** page_table, int num_pages, int prev_page,
