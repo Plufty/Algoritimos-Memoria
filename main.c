@@ -58,7 +58,7 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
     int page;
     for(page = 0;page < num_pages;page++)//percorrendo todas as páginas
     {       
-        printf("%d\n", page_table[page][PT_REFERENCE_BIT]);
+        printf("%d\n", page);
         if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 0)//se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída
         {            
             return page;
@@ -66,6 +66,7 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
         else if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 1)
         {
             //devo colocar a página no final da fila
+            page_table[page][PT_REFERENCE_BIT] = 0;
         }
     }
 
@@ -125,14 +126,22 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
 int aging(int8_t** page_table, int num_pages, int prev_page,
           int fifo_frm, int num_frames, int clock) 
 {
-    int menor = 1;
-    printf("%d", page_table[menor][PT_AGING_COUNTER]);
     int page;
-    for(page = 0;page < num_pages;page++)//percorrendo todas as páginas e adicionando os contadores
+    int menor;
+    int valor = pow(2, num_pages)+1;
+    for(page = 0;page < num_pages;page++)
     {
-        printf("counter: %d, clock: %d\n", page_table[menor][PT_AGING_COUNTER], clock);
+        if(page_table[page][PT_REFERENCE_BIT] == 1 && page_table[page][PT_MAPPED]!=0 && clock == 1)
+        {            
+            page_table[page][PT_AGING_COUNTER] = page_table[page][PT_AGING_COUNTER]/2;
+        }
+        if(page_table[page][PT_AGING_COUNTER]<valor && page_table[page][PT_MAPPED]!=0)
+        {
+            valor = page_table[page][PT_AGING_COUNTER];
+            menor = page;
+        }
     }
-    return page;
+    return menor;
 }
 
 int random_page(int8_t** page_table, int num_pages, int prev_page,
