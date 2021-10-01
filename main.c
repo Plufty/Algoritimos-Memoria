@@ -57,18 +57,27 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
 { 
     int page;
 
-    for(page = 0;page < num_pages;page++)//percorrendo todas as páginas    
-    { 
-                
-        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 1)
-        {
-            //devo colocar a página no final da fila
-            page_table[page][PT_REFERENCE_BIT] = 0;
-        }
+    while(page < num_pages)//percorrendo todas as páginas    
+    {
         if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 0)//se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída
         {            
             return page;
+        }                
+        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 1)
+        {
+            //devo colocar a página no final da fila
+            page_table[page][PT_REFERENCE_BIT] = 0;                        
+            if(fifo_frm < num_pages)
+            {
+                fifo_frm+=1;
+            }
+            else
+            {
+                fifo_frm = 0;
+            }
+            page = 0;
         }
+        page++;
     }
 
 }
@@ -134,9 +143,10 @@ int aging(int8_t** page_table, int num_pages, int prev_page,
     {
         if(page_table[page][PT_REFERENCE_BIT] == 1 && page_table[page][PT_MAPPED]!=0 && clock == 1)
         {            
-            page_table[page][PT_AGING_COUNTER] = page_table[page][PT_AGING_COUNTER]/2;
+            page_table[page][PT_AGING_COUNTER] = page_table[page][PT_AGING_COUNTER]/2;//Move o bit R para a direita.
         }
-        if(page_table[page][PT_AGING_COUNTER]<valor && page_table[page][PT_MAPPED]!=0)
+        //verifica qual é o menor AGING_COUNTER entre os frame IDS.
+        if(page_table[page][PT_AGING_COUNTER]<valor && (page_table[page][PT_FRAMEID] >= 0 && page_table[page][PT_MAPPED] < num_frames) && page_table[page][PT_MAPPED]!=0)        
         {
             valor = page_table[page][PT_AGING_COUNTER];
             menor = page;
