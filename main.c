@@ -56,6 +56,8 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
                   int fifo_frm, int num_frames, int clock) 
 {
     int page;
+    int *primeiraMoldura;
+    primeiraMoldura = fifo_frm;
 
     for(page=0;page < num_pages; page++)//percorrendo todas as páginas    
     {
@@ -63,20 +65,22 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
         {            
             return page;
         }                
-        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 1)
+        else if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 1)
         {
             //mover para o final da fila;
             page_table[page][PT_REFERENCE_BIT] = 0;
-            //Altera o a primeira moldura acessada para dar a segunda chance pra página
-            if(fifo_frm > num_frames)
-            {
-                fifo_frm+=1;
-            }
-            else if(fifo_frm >= num_frames)
+            fifo_frm+=1;
+            if(fifo_frm == num_frames)
             {
                 fifo_frm = 0;
             }
-            page-=1;
+                for(page=0;page < num_pages; page++)//percorrendo todas as páginas    
+                {
+                    if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 0)//se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída
+                    {            
+                        return page;
+                    }
+                } 
         }
     }   
 }
