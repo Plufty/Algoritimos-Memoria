@@ -5,3 +5,5 @@ Como utilizar: após compilado, utilizar o comando ./main [Algoritmo] 10 < anoma
 
 
 Bug/problema conhecido - Algoritmo second_chance incompleto, não consegui chegar a uma solução para o mesmo.
+
+GitHub - https://github.com/Plufty/Algoritimos-Memoria/
