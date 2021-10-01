@@ -135,15 +135,16 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
 
 int aging(int8_t** page_table, int num_pages, int prev_page,
           int fifo_frm, int num_frames, int clock) 
-{
+{ 
+    //Utilizando contador para comparação com NFU.  
     int page;
     int menor;
-    int valor = pow(2, num_pages)+1;
+    int valor = pow(2, num_pages)+1;//um valor muito alto para sempre ser menor na primeira comparação.
     for(page = 0;page < num_pages;page++)
     {
         if(page_table[page][PT_REFERENCE_BIT] == 1 && page_table[page][PT_MAPPED]!=0 && clock == 1)
         {            
-            page_table[page][PT_AGING_COUNTER] = page_table[page][PT_AGING_COUNTER]/2;//Move o bit R para a direita.
+            page_table[page][PT_AGING_COUNTER]+=1;//incrementa o contador sempre que a página é referenciada
         }
         //verifica qual é o menor AGING_COUNTER entre os frame IDS.
         if(page_table[page][PT_AGING_COUNTER]<valor && (page_table[page][PT_FRAMEID] >= 0 && page_table[page][PT_MAPPED] < num_frames) && page_table[page][PT_MAPPED]!=0)        
@@ -153,6 +154,8 @@ int aging(int8_t** page_table, int num_pages, int prev_page,
         }
     }
     return menor;
+
+   
 }
 
 int random_page(int8_t** page_table, int num_pages, int prev_page,
