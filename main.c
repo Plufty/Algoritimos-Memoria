@@ -37,6 +37,85 @@ typedef struct {
 // - Se a última instrução gerou um ciclo de clock
 //
 // Adicione mais parâmetros caso ache necessário
+struct Fila 
+{
+
+	int capacidade;
+	float *dados;
+	int primeiro;
+	int ultimo;
+	int nItens; 
+
+};
+
+void criarFila( struct Fila *f, int c ) 
+{ 
+
+	f->capacidade = c;
+	f->dados = (int*) malloc (f->capacidade * sizeof(int));
+	f->primeiro = 0;
+	f->ultimo = -1;
+	f->nItens = 0; 
+
+}
+
+void inserir(struct Fila *f, int v) 
+{
+
+	if(f->ultimo == f->capacidade-1)
+		f->ultimo = -1;
+
+	f->ultimo++;
+	f->dados[f->ultimo] = v; // incrementa ultimo e insere
+	f->nItens++; // mais um item inserido
+
+}
+
+int remover( struct Fila *f ) 
+{ 
+	// pega o item do começo da fila
+
+	int temp = f->dados[f->primeiro++]; // pega o valor e incrementa o primeiro
+
+	if(f->primeiro == f->capacidade)
+		f->primeiro = 0;
+
+	f->nItens--;  // um item retirado
+	return temp;
+
+}
+
+int estaVazia( struct Fila *f ) 
+{ 
+	// retorna verdadeiro se a fila esta vazia
+
+	return (f->nItens==0);
+
+}
+
+int estaCheia( struct Fila *f ) 
+{ 
+	// retorna verdadeiro se a fila esta cheia
+
+	return (f->nItens == f->capacidade);
+}
+void mostrarFila(struct Fila *f)
+{
+
+	int cont, i;
+
+	for ( cont=0, i= f->primeiro; cont < f->nItens; cont++)
+	{
+
+		printf("%d\t",f->dados[i++]);
+
+		if (i == f->capacidade)
+			i=0;
+
+	}
+	printf("\n\n");
+
+}
 
 int fifo(int8_t** page_table, int num_pages, int prev_page,
          int fifo_frm, int num_frames, int clock) 
@@ -55,27 +134,34 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
 int second_chance(int8_t** page_table, int num_pages, int prev_page,
                   int fifo_frm, int num_frames, int clock) 
 {
-    int page;
+    int page, moldura;
     int primeiraMoldura;
-
-    for(page=0;page < num_pages; page++)//percorrendo todas as páginas    
+    //verifica percorre todas as páginas a cada moldura, é necessário verificar novamente cada vez que uma página é movida para o fim da fila
+    for(moldura=0;moldura < num_frames; moldura++)
     {
-        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 0)//se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída
-        {            
-            primeiraMoldura = page;
-        }                
-        else if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 1)
+        for(page=0;page < num_pages; page++)//percorrendo todas as páginas    
         {
-            //mover para o final da fila;
-            page_table[page][PT_REFERENCE_BIT] = 0;
-            fifo_frm+=1;
-            if(fifo_frm == num_frames)
+            //se essa foi a primeira moldura acessada, a página está mapeada e seu bit R for 0, ela será substituída
+            if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 0)
+            {            
+                return page;
+            } 
+            //caso seu bit R for 1, ela será movida para o final da fila e seu bit R será setado como 0;               
+            else if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0 && page_table[page][PT_REFERENCE_BIT] == 1)
             {
-                fifo_frm = 0;
-            }//Algoritimo incompleto;
-        }
-    }   
-    return primeiraMoldura;
+                page_table[page][PT_REFERENCE_BIT] = 0;
+                /*Como as molduras trabalham em um loop: 0,1,2...num_frames, 0,1,2... ao mover o 
+                fifo_frm para o próximo, o antigo fifo_frm se torna a última página a ser removida */
+                fifo_frm = fifo_frm+1;
+                if(fifo_frm >= num_frames)
+                {
+                    fifo_frm=0;
+                }
+            }
+        }   
+    }
+    //caso final, caso todas as páginas estiverem sido referenciadas utiliza-se o fifo, pois 
+    return fifo(page_table, num_pages,  prev_page, fifo_frm, num_frames, clock);
 }
 
 
