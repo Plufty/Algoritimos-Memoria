@@ -122,8 +122,9 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
 {
     int page;
     for(page = 0;page < num_pages;page++)//percorrendo todas as páginas
-    {       
-        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0)//se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída
+    {  
+        //se essa foi a primeira moldura acessada e a página está mapeada, ela será substituída     
+        if(page_table[page][PT_FRAMEID] == fifo_frm && page_table[page][PT_MAPPED]!=0)
         {
             
             return page;

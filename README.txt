@@ -4,6 +4,6 @@ Como utilizar: após compilado, utilizar o comando ./main [Algoritmo] 10 < anoma
                O número de páginas e frames poderá ser alterado no arquivo anomaly.dat, na primeira linha o primeiro número representa as páginas, seguido pelo número de frames. 
 
 
-Bug/problema conhecido - Algoritmo second_chance incompleto, não consegui chegar a uma solução para o mesmo.
+Bug/problema conhecido - Ao utilizar apenas 1 moldura, o algoritmo aging apresenta o erro Assertion failed.
 
 GitHub - https://github.com/Plufty/Algoritimos-Memoria/
