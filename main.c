@@ -231,7 +231,7 @@ int aging(int8_t** page_table, int num_pages, int prev_page,
             page_table[page][PT_AGING_COUNTER]+=1;//incrementa o contador sempre que a página é referenciada
         }
         //verifica qual é o menor AGING_COUNTER entre os frame IDS.
-        if(page_table[page][PT_AGING_COUNTER]<valor && (page_table[page][PT_FRAMEID] >= 0 && page_table[page][PT_MAPPED] < num_frames) && page_table[page][PT_MAPPED]!=0)        
+        if(page_table[page][PT_AGING_COUNTER]<valor && page_table[page][PT_MAPPED]!=0)        
         {
             valor = page_table[page][PT_AGING_COUNTER];
             menor = page;
