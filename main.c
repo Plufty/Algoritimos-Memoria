@@ -56,10 +56,10 @@ int fifo(int8_t** page_table, int num_pages, int prev_page,
 int second_chance(int8_t** page_table, int num_pages, int prev_page,
                   int fifo_frm, int num_frames, int clock) 
 {
-    int page, moldura;
-    int primeiraMoldura;
-    //verifica percorre todas as páginas a cada moldura, é necessário verificar novamente cada vez que uma página é movida para o fim da fila
-    for(moldura=0;moldura < num_frames; moldura++)
+    int page;
+    int loop = 1;//variável para loop infinito, visto que ao colocar a página no fim da fila ela deverá ser testada novamente no futuro
+    //verifica percorre todas as páginas é necessário verificar novamente cada vez que uma página é movida para o fim da fila
+    while(loop)//loop infinito entre as molduras, finalizado com com retorno
     {
         for(page=0;page < num_pages; page++)//percorrendo todas as páginas    
         {
@@ -82,8 +82,6 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
             }
         }   
     }
-    //caso final, caso todas as páginas estiverem sido referenciadas utiliza-se o fifo, pois 
-    return fifo(page_table, num_pages,  prev_page, fifo_frm, num_frames, clock);
 }
 
 
