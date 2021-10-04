@@ -90,52 +90,27 @@ int second_chance(int8_t** page_table, int num_pages, int prev_page,
 int nru(int8_t** page_table, int num_pages, int prev_page,
         int fifo_frm, int num_frames, int clock) 
 {
-    int classe0, classe1, classe2, classe3, page;
-    int completo = 0;//variável para verificar se a página foi encontrada
+    int page;
 
-    for (classe0 = 0; classe0 < num_pages; classe0++)
-    {    
-        if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_DIRTY] == 0 && page_table[classe0][PT_MAPPED]!=0)//classe 0
-        {
-            completo = 1;//caso encontre, a busca está completa
-            page = classe0;
-        }
-    }
-    if (completo == 0)
-    {
-        for (classe1 = 0; classe1 < num_pages; classe1++)
-        {
-            if(page_table[classe1][PT_REFERENCE_BIT] == 0 && page_table[classe1][PT_DIRTY] == 1 && page_table[classe1][PT_MAPPED]!=0)//classe 1
+        for (page = 0; page < num_pages; page++)
+        {    
+            if(page_table[page][PT_REFERENCE_BIT] == 0 && page_table[page][PT_DIRTY] == 0 && page_table[page][PT_MAPPED]!=0)//classe 0
             {
-                completo = 1;//caso encontre, a busca está completa
-                page = classe1;
+                return page;
             }
-        }
-        if (completo == 0)
-        {
-            for (classe2 = 0; classe2 < num_pages; classe2++)
+            else if(page_table[page][PT_REFERENCE_BIT] == 0 && page_table[page][PT_DIRTY] == 1 && page_table[page][PT_MAPPED]!=0)//classe 1
             {
-                if(page_table[classe2][PT_REFERENCE_BIT] == 1 && page_table[classe2][PT_DIRTY] == 0 && page_table[classe2][PT_MAPPED]!=0)//classe 2
-                {
-                    completo = 1;//caso encontre, a busca está completa
-                    page = classe2;
-                }
+                return page;
             }
-            if (completo == 0)
+            else if(page_table[page][PT_REFERENCE_BIT] == 1 && page_table[page][PT_DIRTY] == 0 && page_table[page][PT_MAPPED]!=0)//classe 2
             {
-                for (classe3 = 0; classe3 < num_pages; classe3++)
-                {
-                    if(page_table[classe3][PT_REFERENCE_BIT] == 1 && page_table[classe3][PT_DIRTY] == 1 && page_table[classe3][PT_MAPPED]!=0)//classe 3
-                    {
-                        
-                        completo = 1;//caso encontre, a busca está completa
-                        page = classe3;
-                    }
-                }
-            }    
-        }    
-    }
-    return page;
+                return page;
+            }
+            else if(page_table[page][PT_REFERENCE_BIT] == 1 && page_table[page][PT_DIRTY] == 1 && page_table[page][PT_MAPPED]!=0)//classe 3
+            {
+                return page;
+            }
+        } 
 }
 
 int aging(int8_t** page_table, int num_pages, int prev_page,
