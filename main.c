@@ -170,13 +170,13 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
         int fifo_frm, int num_frames, int clock) 
 {
     int classe0, classe1, classe2, classe3, page;
-    int completo = 0;
+    int completo = 0;//variável para verificar se a página foi encontrada
 
     for (classe0 = 0; classe0 < num_pages; classe0++)
     {    
         if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_DIRTY] == 0 && page_table[classe0][PT_MAPPED]!=0)//classe 0
         {
-            completo = 1;
+            completo = 1;//caso encontre, a busca está completa
             page = classe0;
         }
     }
@@ -186,7 +186,7 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
         {
             if(page_table[classe1][PT_REFERENCE_BIT] == 0 && page_table[classe1][PT_DIRTY] == 1 && page_table[classe1][PT_MAPPED]!=0)//classe 1
             {
-                completo = 1;
+                completo = 1;//caso encontre, a busca está completa
                 page = classe1;
             }
         }
@@ -196,7 +196,7 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
             {
                 if(page_table[classe2][PT_REFERENCE_BIT] == 1 && page_table[classe2][PT_DIRTY] == 0 && page_table[classe2][PT_MAPPED]!=0)//classe 2
                 {
-                    completo = 1;
+                    completo = 1;//caso encontre, a busca está completa
                     page = classe2;
                 }
             }
@@ -207,7 +207,7 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
                     if(page_table[classe3][PT_REFERENCE_BIT] == 1 && page_table[classe3][PT_DIRTY] == 1 && page_table[classe3][PT_MAPPED]!=0)//classe 3
                     {
                         
-                        completo = 1;
+                        completo = 1;//caso encontre, a busca está completa
                         page = classe3;
                     }
                 }
