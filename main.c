@@ -176,6 +176,7 @@ int nru(int8_t** page_table, int num_pages, int prev_page,
     {    
         if(page_table[classe0][PT_REFERENCE_BIT] == 0 && page_table[classe0][PT_DIRTY] == 0 && page_table[classe0][PT_MAPPED]!=0)//classe 0
         {
+            completo = 1;
             page = classe0;
         }
     }
